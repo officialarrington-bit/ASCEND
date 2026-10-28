@@ -1,0 +1,10 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {scheduleMatch} from '../src/scheduling.js';
+const athlete = {windows:[{day:'Mon',start:'13:00',end:'17:00'}],startDate:'2027-06-01',endDate:'2027-08-31',hours:10,format:'Either'};
+const job = {windows:[{day:'Mon',start:'14:00',end:'16:00'}],startDate:'2027-06-01',endDate:'2027-07-31',hours:4,format:'In person'};
+test('matches contained days, hours and dates',()=>assert.equal(scheduleMatch(athlete,job).status,'fits'));
+test('rejects morning and unselected days',()=>{for(const w of [{day:'Mon',start:'09:00',end:'12:00'},{day:'Tue',start:'14:00',end:'16:00'}]) assert.equal(scheduleMatch(athlete,{...job,windows:[w]}).status,'conflict');});
+test('never calls negotiable hours a confirmed fit',()=>assert.equal(scheduleMatch(athlete,{...job,negotiable:true}).status,'flexible'));
+test('checks weekly hours, work format and full date range',()=>{for(const update of [{hours:11},{startDate:'2027-05-31'},{endDate:'2027-09-01'}]) assert.equal(scheduleMatch(athlete,{...job,...update}).status,'conflict');assert.equal(scheduleMatch({...athlete,format:'Remote'},job).status,'conflict');});
+test('legacy and incomplete records do not falsely match',()=>{assert.equal(scheduleMatch({},job).status,'unknown');assert.equal(scheduleMatch(athlete,{}).status,'unknown');});

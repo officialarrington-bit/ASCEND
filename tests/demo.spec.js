@@ -11,6 +11,11 @@ test("complete athlete to employer and staff journey persists", async ({
   await nav(page, "My profile");
   await page.getByLabel("Full name", { exact: true }).fill("Riley Demo");
   await page.getByLabel("Career interests").fill("Finance");
+  await page.getByLabel("Start date", {exact:true}).fill("2026-11-01");
+  await page.getByLabel("End date", {exact:true}).fill("2026-12-31");
+  await page.getByLabel("Maximum hours per week").fill("10");
+  await page.getByRole("checkbox", {name:"Thu",exact:true}).check();
+  await page.getByLabel("From (Thu)").fill("09:00");
   await page.getByRole("button", { name: "Save profile" }).click();
   await nav(page, "Explore opportunities");
   await page.getByLabel("Search opportunities").fill("financial");
@@ -66,6 +71,10 @@ test("employer creation requires approval before discovery", async ({
     ["Eligibility / requirements", "All majors welcome"],
   ])
     await page.getByLabel(name, { exact: false }).fill(value);
+  await page.getByLabel("Start date", {exact:true}).fill("2026-11-01");
+  await page.getByLabel("End date", {exact:true}).fill("2026-12-31");
+  await page.getByLabel("Expected hours per week").fill("2");
+  await page.getByLabel("Scheduling is negotiable").check();
   await page.getByRole("button", { name: "Submit for staff approval" }).click();
   await expect(page.locator("main")).toContainText("Awaiting staff approval");
   await role(page, "Student-athlete");
@@ -113,3 +122,4 @@ test("mobile navigation, filters, dialog keyboard, reminders and reset", async (
   await page.getByRole("button", { name: "Reset demo" }).click();
   await expect(page.locator("main")).not.toContainText("Thank Morgan");
 });
+
