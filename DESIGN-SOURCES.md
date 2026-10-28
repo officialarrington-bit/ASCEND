@@ -17,3 +17,7 @@ Fictional employers and sample opportunities are labeled. Role switches are demo
 
 ## Review
 Production build and scheduling unit checks are run for this update. Browser interactions are checked through the available managed preview; do not infer a full automated accessibility certification.
+
+## Athletics photograph
+https://commons.wikimedia.org/wiki/File:Chris_Clemons_(basketball).jpg
+Creator: SneakinDeacon. Campbell basketball player Chris Clemons photographed March 3, 2016. License: CC BY-SA 2.0, https://creativecommons.org/licenses/by-sa/2.0/. Wikimedia's reviewer confirmed the source license. Displayed as an archival photo, never a current athlete, ASCEND user, program participant, or endorsement. CSS crops for display; attribution and crop notice remain visible.

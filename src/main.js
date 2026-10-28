@@ -304,7 +304,7 @@ function schoolSettings() {
 function hero() {
   const t = resolveTheme(state);
   const media = t.imagery
-    ? `<figure class="hero-photo"><img src="${esc(t.imagery.src)}" alt="${esc(t.imagery.alt)}"><figcaption><a href="${esc(t.imagery.sourceUrl)}" target="_blank" rel="noopener">${esc(t.imagery.credit)}</a> · <a href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank" rel="noopener">${esc(t.imagery.license)}</a> · Cropped for display</figcaption></figure>`
+    ? `<figure class="hero-photo"><img src="${esc(t.imagery.src)}" alt="${esc(t.imagery.alt)}"><figcaption><a href="${esc(t.imagery.sourceUrl)}" target="_blank" rel="noopener">${esc(t.imagery.credit)}</a> · <a href="${esc(t.imagery.license === "CC BY-SA 2.0" ? "https://creativecommons.org/licenses/by-sa/2.0/" : "https://creativecommons.org/licenses/by-sa/4.0/")}" target="_blank" rel="noopener">${esc(t.imagery.license)}</a> · Cropped for display</figcaption></figure>`
     : `<div class="hero-track" aria-hidden="true"><svg class="track-graphic" viewBox="0 0 520 400" fill="none"><path d="M80 480V225C80 45 465 45 465 225V480M117 480V225C117 92 428 92 428 225V480M154 480V225C154 139 391 139 391 225V480M191 480V225C191 186 354 186 354 225V480" stroke="currentColor" stroke-width="1.5"/><path d="m236 297 75-75m-74 0h74v74" stroke="var(--accent)" stroke-width="15"/><path d="M30 350h470M30 370h470" stroke="currentColor" stroke-width="1"/></svg><div class="track-caption"><span>DRIVE. DISCIPLINE. DIRECTION.</span><strong>YOUR NEXT<br>STARTING LINE.</strong></div><div class="track-number">01 / THE NEXT CHAPTER</div></div>`;
   return `<section class="program-hero" aria-labelledby="hero-title"><div class="hero-copy"><div class="eyebrow">${esc(programName())} / PROPOSED PROGRAM</div><h1 id="hero-title">BUILD WHAT<br>COMES AFTER<br><span>THE GAME.</span></h1><p>Your sport. Your schedule. Your next chapter. Discover career experiences designed to fit life as a ${esc(t.shortName)} student-athlete.</p><div class="hero-actions"><button class="primary" data-action="explore">Explore Opportunities ${arrow}</button><button class="hero-secondary" data-action="employers">For Employers ${arrow}</button></div><span class="hero-disclaimer">Buies Creek, North Carolina · Built with student-athletes in mind.</span></div>${media}</section>
  <div class="program-path" aria-label="How the proposed program works">${[
@@ -317,7 +317,8 @@ function hero() {
      ([n, title, desc]) =>
        `<div><span>${n}</span><div><strong>${title}</strong><p>${desc}</p></div></div>`,
    )
-   .join("")}</div>`;
+   .join("")}</div>
+ <section class="campus-bridge"><img src="/images/campbell-campus.jpg" alt="Campbell University campus in Buies Creek"><div><span class="eyebrow">ROOTED IN BUIES CREEK</span><h2>Built for the whole student-athlete journey.</h2><p>Explore meaningful experience while you compete, then carry the connections forward.</p><small>Campus photo: <a href="https://commons.wikimedia.org/wiki/File:CampbellUniversityStudentUnionPanorama.jpg" target="_blank" rel="noopener">Stormsnsnow / Wikimedia Commons</a> · <a href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank" rel="noopener">CC BY-SA 4.0</a> · Cropped for display</small></div></section>`;
 }
 function board() {
   const list = state.opportunities.filter(

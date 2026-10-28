@@ -9,7 +9,7 @@ export const defaultTheme = {
     "Campbell primary HEX palette verified October 28, 2026.",
   conceptLabel:
     "Student-built concept for the Presidential Innovation Challenge",
-  imagery: { src:"/images/campbell-campus.jpg", alt:"Panoramic view of Campbell University campus in Buies Creek", credit:"Photo: Stormsnsnow / Wikimedia Commons", license:"CC BY-SA 4.0", sourceUrl:"https://commons.wikimedia.org/wiki/File:CampbellUniversityStudentUnionPanorama.jpg" }, // Licensed campus photograph; attribution is rendered next to it.
+  imagery: { src:"/images/campbell-basketball-2016.jpg", alt:"Campbell basketball player Chris Clemons during a 2016 game", credit:"2016 archival photo: SneakinDeacon / Wikimedia Commons", license:"CC BY-SA 2.0", sourceUrl:"https://commons.wikimedia.org/wiki/File:Chris_Clemons_(basketball).jpg" }, // Licensed campus photograph; attribution is rendered next to it.
   contacts: {
     label: "Program contact",
     name: "To be confirmed for a future pilot",
