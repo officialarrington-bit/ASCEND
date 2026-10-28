@@ -22,8 +22,8 @@ test("branding, section categories, employer entry, and opportunity jump", async
       .getByRole("region", { name: "Other sample internships and jobs" })
       .locator(".card"),
   ).toHaveCount(2);
-  await page.getByLabel("Matches my availability").check();
-  await expect(page.locator(".card")).toHaveCount(3);
+  await page.getByLabel("Fits my stated availability").check();
+  await expect(page.locator(".card")).toHaveCount(0);
   await page.getByRole("button", { name: "Clear filters" }).click();
   await expect(page.locator(".card")).toHaveCount(6);
   await page
@@ -120,3 +120,4 @@ test("desktop and mobile accessibility across all role pages", async ({
     }
   }
 });
+

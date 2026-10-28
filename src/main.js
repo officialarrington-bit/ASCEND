@@ -1,3 +1,4 @@
+import { scheduleMatch, scheduleSummary, days } from "./scheduling.js";
 import "./style.css";
 import { defaultTheme, resolveTheme } from "./theme.js";
 const arrow =
@@ -30,6 +31,7 @@ const seed = () => ({
   opportunities: [
     {
       id: 1,
+      windows: [{day:"Thu",start:"09:00",end:"13:00"}], startDate:"2026-11-12", endDate:"2026-11-12", hours:4, format:"In person", negotiable:false,
       title: "A day in financial strategy",
       company: "Oakline Financial",
       industry: "Finance",
@@ -52,6 +54,7 @@ const seed = () => ({
     },
     {
       id: 2,
+      windows: [{day:"Wed",start:"14:00",end:"16:00"}], startDate:"2026-11-18", endDate:"2026-11-18", hours:2, format:"In person", negotiable:false,
       title: "Inside healthcare operations",
       company: "Juniper Health Group",
       industry: "Healthcare administration",
@@ -73,6 +76,7 @@ const seed = () => ({
     },
     {
       id: 3,
+      negotiable:true, hours:5, format:"Remote",
       title: "Build your technology career",
       company: "Northstar Digital",
       industry: "Technology",
@@ -93,6 +97,7 @@ const seed = () => ({
     },
     {
       id: 4,
+      negotiable:true, hours:10, format:"In person",
       title: "Brand & marketing intern",
       company: "Fieldwork Creative",
       industry: "Marketing",
@@ -134,6 +139,7 @@ const seed = () => ({
     },
     {
       id: 6,
+      negotiable:true, hours:5, format:"Remote",
       title: "Business leadership fellowship",
       company: "Cedarworks Supply",
       industry: "Business operations",
@@ -163,6 +169,15 @@ try {
 } catch {
   state = seed();
 }
+if (state.theme?.colors?.accent === "#b8502b") state.theme.colors.accent = defaultTheme.colors.accent;
+if (state.theme?.imagery === null) delete state.theme.imagery;
+for (const sample of seed().opportunities) {
+  const old = state.opportunities.find(o => o.id === sample.id && o.company === sample.company && o.schedule === sample.schedule);
+  if (old && !old.windows && old.negotiable === undefined) {
+    for (const key of ['windows','startDate','endDate','hours','format','negotiable']) if (sample[key] !== undefined) old[key] = sample[key];
+  }
+}
+
 let role = "Student-athlete",
   page = "Explore opportunities",
   selected = null,
@@ -215,10 +230,7 @@ function match(o) {
   let reasons = [];
   if (state.athlete.interests.toLowerCase().includes(o.industry.toLowerCase()))
     reasons.push("Matches your " + o.industry.toLowerCase() + " interest");
-  if (state.athlete.availability === "Flexible" && /flexible/i.test(o.schedule))
-    reasons.push("Flexible timing matches your availability");
-  if (state.athlete.availability === o.time)
-    reasons.push("Matches your preferred time commitment");
+  reasons.push(scheduleMatch(state.athlete, o).label);
   return reasons;
 }
 function programName() {
@@ -241,12 +253,12 @@ function render() {
   }
   document.title = programName() + " · Career experiences";
   app.innerHTML = `<a class="skip-link" href="#main-content">Skip to content</a>
-  <div class="concept-bar"><div><span class="concept-dot"></span>${esc(theme.conceptLabel)}</div><span>Proposed program · Not university endorsed</span></div>
+  <div class="concept-bar"><div><span class="concept-dot"></span>${esc(theme.conceptLabel)}</div><span>Campbell ASCEND / Prototype</span></div>
   <header class="masthead"><a class="program-brand" href="#" data-action="home" aria-label="${esc(programName())} home"><span class="brand-school">${esc(theme.shortName)}</span><span class="brand-program">ASCEND<span class="brand-arrow">${arrow}</span></span></a><div class="brand-divider"></div><div class="brand-descriptor">THE NEXT CHAPTER<br><strong>STARTS WITH YOU.</strong></div><div class="masthead-tools"><label class="role-label">INTERACTIVE DEMO ROLE<select id="role">${option(Object.keys(navs), role)}</select></label><button class="reset-button" data-action="reset">Reset demo</button></div></header>
   <div class="navigation-bar"><nav aria-label="${esc(role)} navigation">${navs[role].map((n) => `<button class="nav-item ${page === n ? "active" : ""}" ${page === n ? 'aria-current="page"' : ""} data-page="${n}">${n}</button>`).join("")}</nav><span class="workspace-context">${esc(role)} workspace <span class="status-dot"></span></span></div>
   <div class="demo-banner"><strong>THIS IS A WORKING DEMO.</strong><span>Fictional employers. Sample opportunities. Simulated activity. No secured partnerships or university endorsement.</span></div>
   <main id="main-content" tabindex="-1">${content()}</main>
-  <footer><div><strong>${esc(programName())}</strong><p>A proposed next step for ${esc(state.school)} student-athletes.</p><span>Powered by the ASCEND platform</span></div><div class="footer-contact"><strong>${esc(theme.contacts.label)}</strong><p>${esc(theme.contacts.name)}</p>${theme.contacts.email ? `<p>${esc(theme.contacts.email)}</p>` : ""}</div><div class="footer-demo"><strong>Concept, not commitment.</strong><p>Browser-local demo. Data stays in this browser; no shared live service. No real applications or messages are sent.</p><span>${esc(theme.conceptLabel)}</span></div></footer>
+  <footer><div><strong>${esc(programName())}</strong><p>A proposed next step for ${esc(state.school)} student-athletes.</p><span>Powered by the ASCEND platform</span></div><div class="footer-contact"><strong>${esc(theme.contacts.label)}</strong><p>${esc(theme.contacts.name)}</p>${theme.contacts.email ? `<p>${esc(theme.contacts.email)}</p>` : ""}</div><div class="footer-demo"><strong>About this prototype</strong><p>Browser-local demo. Data stays in this browser; no shared live service. No real applications or messages are sent.</p><span>${esc(theme.conceptLabel)}</span></div></footer>
   ${selected ? details() : ""}${toast ? `<div class="toast" role="status">${esc(toast)}</div>` : ""}`;
   document
     .querySelectorAll(".panel h3, .card h3")
@@ -286,18 +298,18 @@ function schoolSettings() {
       "Built for your university.",
       "Keep the program identity consistent across every role. Changes are local to this browser.",
     ) +
-    `<form id="school-form" class="panel form-grid">${field("School name", "school", state.school)}${field("Program school name", "shortName", t.shortName)}${field("Program accent (demo palette)", "accent", t.colors.accent, "color")}${field("Program contact name / status", "contactName", t.contacts.name)}${field("Program contact email (optional, non-sensitive)", "contactEmail", t.contacts.email, "email", false)}<div class="note">Official Campbell colors still require verification against an accessible official branding guide. The original demo accent is retained. School-supported athlete verification is a future feature; NCAA IDs do not establish identity or eligibility.</div><button class="primary">Save school settings</button></form>`
+    `<form id="school-form" class="panel form-grid">${field("School name", "school", state.school)}${field("Program school name", "shortName", t.shortName)}${field("Program accent (demo palette)", "accent", t.colors.accent, "color")}${field("Program contact name / status", "contactName", t.contacts.name)}${field("Program contact email (optional, non-sensitive)", "contactEmail", t.contacts.email, "email", false)}<div class="note">Campbell palette verified against the university brand guide on October 28, 2026. School-supported athlete verification is a future feature; NCAA IDs do not establish identity or eligibility.</div><button class="primary">Save school settings</button></form>`
   );
 }
 function hero() {
   const t = resolveTheme(state);
   const media = t.imagery
-    ? `<figure class="hero-photo"><img src="${esc(t.imagery.src)}" alt="${esc(t.imagery.alt)}"><figcaption>${esc(t.imagery.credit)} · ${esc(t.imagery.license)}</figcaption></figure>`
+    ? `<figure class="hero-photo"><img src="${esc(t.imagery.src)}" alt="${esc(t.imagery.alt)}"><figcaption><a href="${esc(t.imagery.sourceUrl)}" target="_blank" rel="noopener">${esc(t.imagery.credit)}</a> · <a href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank" rel="noopener">${esc(t.imagery.license)}</a> · Cropped for display</figcaption></figure>`
     : `<div class="hero-track" aria-hidden="true"><svg class="track-graphic" viewBox="0 0 520 400" fill="none"><path d="M80 480V225C80 45 465 45 465 225V480M117 480V225C117 92 428 92 428 225V480M154 480V225C154 139 391 139 391 225V480M191 480V225C191 186 354 186 354 225V480" stroke="currentColor" stroke-width="1.5"/><path d="m236 297 75-75m-74 0h74v74" stroke="var(--accent)" stroke-width="15"/><path d="M30 350h470M30 370h470" stroke="currentColor" stroke-width="1"/></svg><div class="track-caption"><span>DRIVE. DISCIPLINE. DIRECTION.</span><strong>YOUR NEXT<br>STARTING LINE.</strong></div><div class="track-number">01 / THE NEXT CHAPTER</div></div>`;
-  return `<section class="program-hero" aria-labelledby="hero-title"><div class="hero-copy"><div class="eyebrow">${esc(programName())} / PROPOSED PROGRAM</div><h1 id="hero-title">BUILD WHAT<br>COMES AFTER<br><span>THE GAME.</span></h1><p>Explore careers, connect with employers, and gain professional experience while competing at ${esc(t.shortName)}.</p><div class="hero-actions"><button class="primary" data-action="explore">Explore Opportunities ${arrow}</button><button class="hero-secondary" data-action="employers">For Employers ${arrow}</button></div><span class="hero-disclaimer">Student-built concept. Real ambition. All experiences shown are samples.</span></div>${media}</section>
+  return `<section class="program-hero" aria-labelledby="hero-title"><div class="hero-copy"><div class="eyebrow">${esc(programName())} / PROPOSED PROGRAM</div><h1 id="hero-title">BUILD WHAT<br>COMES AFTER<br><span>THE GAME.</span></h1><p>Your sport. Your schedule. Your next chapter. Discover career experiences designed to fit life as a ${esc(t.shortName)} student-athlete.</p><div class="hero-actions"><button class="primary" data-action="explore">Explore Opportunities ${arrow}</button><button class="hero-secondary" data-action="employers">For Employers ${arrow}</button></div><span class="hero-disclaimer">Buies Creek, North Carolina · Built with student-athletes in mind.</span></div>${media}</section>
  <div class="program-path" aria-label="How the proposed program works">${[
    ["01", "FIND YOUR DIRECTION", "Explore your interests."],
-   ["02", "MAKE A CONNECTION", "Meet employers. Experience the work."],
+   ["02", "MAKE A CONNECTION", "Meet professionals. Explore work that fits."],
    ["03", "TAKE THE NEXT STEP", "Explore internships, fellowships & jobs."],
    ["04", "KEEP MOVING FORWARD", "Build relationships. Track next steps."],
  ]
@@ -318,10 +330,7 @@ function board() {
       ["industry", "type", "location", "time"].every(
         (k) => !filters[k] || o[k] === filters[k],
       ) &&
-      (!filters.availability ||
-        (state.athlete.availability === "Flexible"
-          ? /flexible/i.test(o.schedule)
-          : state.athlete.availability === o.time)),
+      (!filters.availability || scheduleMatch(state.athlete, o).status === "fits"),
   );
   const section = (partner, title, desc) => {
     let entries = list.filter((o) => isPartnerExperience(o) === partner);
@@ -329,10 +338,10 @@ function board() {
   };
   return (
     hero() +
-    `<section id="opportunity-board" tabindex="-1"><div class="board-heading"><div><div class="eyebrow">YOUR CAREER. YOUR PACE.</div><h2>FIND YOUR NEXT OPPORTUNITY.</h2></div><button class="text-button" data-page="My profile">Update your interests ${arrow}</button></div><div class="filter-panel"><div class="filters"><label class="search"><span aria-hidden="true">⌕</span><input id="search" aria-label="Search opportunities" placeholder="Search experiences, roles, or employers" value="${esc(filters.search)}"></label>${["industry", "type", "location", "time"].map((k) => `<label class="filter-label">${{ industry: "Career interest", type: "Experience type", location: "Location", time: "Time commitment" }[k]}<select data-filter="${k}" aria-label="Filter by ${k}"><option value="">${{ industry: "All industries", type: "All experience types", location: "All locations", time: "Any time commitment" }[k]}</option>${option([...new Set(state.opportunities.filter((o) => o.approved).map((o) => o[k]))], filters[k])}</select></label>`).join("")}</div><div class="board-meta"><label class="availability-check"><input type="checkbox" id="availability-match" ${filters.availability ? "checked" : ""}> Matches my availability <span>(${esc(state.athlete.availability)})</span></label><span class="results-count" role="status">${list.length} sample ${list.length === 1 ? "opportunity" : "opportunities"}</span><button class="text-button" data-action="clear">Clear filters</button></div></div>
+    `<section id="opportunity-board" tabindex="-1"><div class="board-heading"><div><div class="eyebrow">YOUR CAREER. YOUR PACE.</div><h2>FIND YOUR NEXT OPPORTUNITY.</h2></div><button class="text-button" data-page="My profile">Update your interests ${arrow}</button></div><div class="filter-panel"><div class="filters"><label class="search"><span aria-hidden="true">⌕</span><input id="search" aria-label="Search opportunities" placeholder="Search experiences, roles, or employers" value="${esc(filters.search)}"></label>${["industry", "type", "location", "time"].map((k) => `<label class="filter-label">${{ industry: "Career interest", type: "Experience type", location: "Location", time: "Time commitment" }[k]}<select data-filter="${k}" aria-label="Filter by ${k}"><option value="">${{ industry: "All industries", type: "All experience types", location: "All locations", time: "Any time commitment" }[k]}</option>${option([...new Set(state.opportunities.filter((o) => o.approved).map((o) => o[k]))], filters[k])}</select></label>`).join("")}</div><div class="board-meta"><label class="availability-check"><input type="checkbox" id="availability-match" ${filters.availability ? "checked" : ""}> Fits my stated availability</label><span class="results-count" role="status">${list.length} sample ${list.length === 1 ? "opportunity" : "opportunities"}</span><button class="text-button" data-action="clear">Clear filters</button></div></div>
  ${section(true, "Sample ASCEND partner experiences", "A proposed approach: work with companies to arrange experiences for participating athletes. These fictional examples are not secured partnerships.")}
  ${section(false, "Other sample internships and jobs", "Additional fictional listings to explore. These are not verified vacancies, exclusive opportunities, or guaranteed employment.")}
- <div class="note"><strong>MATCHES, EXPLAINED.</strong><span>Matches use selected interests and stated availability, not AI. Interest selection is not a validated career assessment. Hosts confirm scheduling and eligibility.</span></div></section>`
+ <div class="note"><strong>MATCHES, EXPLAINED.</strong><span>Schedule checks compare entered days, hours, dates, weekly limits, and work format. Flexible hours still need employer confirmation. Travel time is not included; times are Eastern. Hosts confirm final arrangements.</span></div></section>`
   );
 }
 function card(o) {
@@ -342,7 +351,7 @@ function card(o) {
       .split(" ")
       .map((x) => x[0])
       .join(""),
-  )}</div><button class="save ${state.saved.includes(o.id) ? "saved" : ""}" data-save="${o.id}" aria-label="${state.saved.includes(o.id) ? "Unsave" : "Save"} ${esc(o.title)}" aria-pressed="${state.saved.includes(o.id)}">${state.saved.includes(o.id) ? "★" : "☆"}</button></div><div class="company-name">${esc(o.company)} <span>· Fictional</span></div><h3><button class="title-button" data-details="${o.id}">${esc(o.title)}</button></h3><div class="card-category"><span class="tag">${esc(o.type)}</span><span>${esc(o.industry)}</span></div><p class="card-description">${esc(o.description)}</p><div class="card-facts"><span>⌖ ${esc(o.location)}</span><span>◷ ${esc(o.time)}</span></div><div class="card-compensation">${esc(o.compensation)}</div><div class="match">${m.length ? "✧ " + esc(m[0]) : "◇ Explore a new direction"}</div><div class="card-footer"><small>${o.restricted ? esc(state.school) + " athletes" : "Open eligibility · see details"}</small><button data-details="${o.id}" class="text-button">View details ${arrow}</button></div></article>`;
+  )}</div><button class="save ${state.saved.includes(o.id) ? "saved" : ""}" data-save="${o.id}" aria-label="${state.saved.includes(o.id) ? "Unsave" : "Save"} ${esc(o.title)}" aria-pressed="${state.saved.includes(o.id)}">${state.saved.includes(o.id) ? "★" : "☆"}</button></div><div class="company-name">${esc(o.company)} <span>· Fictional</span></div><h3><button class="title-button" data-details="${o.id}">${esc(o.title)}</button></h3><div class="card-category"><span class="tag">${esc(o.type)}</span><span>${esc(o.industry)}</span></div><p class="card-description">${esc(o.description)}</p><div class="card-facts"><span>⌖ ${esc(o.location)}</span><span>◷ ${esc(o.time)}</span></div><p class="schedule-status" data-status="${scheduleMatch(state.athlete, o).status}">${esc(scheduleMatch(state.athlete, o).label)}</p><div class="card-compensation">${esc(o.compensation)}</div><div class="match">${m.length ? "✧ " + esc(m[0]) : "◇ Explore a new direction"}</div><div class="card-footer"><small>${o.restricted ? esc(state.school) + " athletes" : "Open eligibility · see details"}</small><button data-details="${o.id}" class="text-button">View details ${arrow}</button></div></article>`;
 }
 function details() {
   let o = state.opportunities.find((x) => x.id === selected);
@@ -357,6 +366,8 @@ function details() {
           : ""),
     ],
     ["Schedule", o.schedule + " · " + o.time],
+    ["Schedule compatibility", scheduleMatch(state.athlete, o).label],
+    ["Required availability", scheduleSummary(o)],
     ["Location", o.location],
     ["Compensation", o.compensation],
     ["Capacity", o.capacity + " participants"],
@@ -367,6 +378,22 @@ function details() {
       "",
     )}</dl>${match(o).length ? `<div class="note">${match(o).map(esc).join(" · ")}</div>` : ""}<p class="muted">Simulated activity only. Hosts make selection decisions; participation and employment are not guaranteed.</p>${role === "Student-athlete" && o.approved ? `<button class="primary" data-apply="${o.id}" ${a ? "disabled" : ""}>${a ? "Interest submitted" : /Shadowing|Company visit/.test(o.type) ? "Register interest (simulated)" : "Submit application (simulated)"}</button>` : ""}</section></div>`;
 }
+
+function scheduleFields(value, employer) {
+  return `<fieldset class="schedule-editor"><legend>${employer ? "Required schedule" : "Your availability"}</legend><p>Enter one window per day, in Eastern time. ${employer ? "Select required days, or mark scheduling negotiable." : "Select days you are available. Unselected days are unavailable."}</p>
+  ${select("Planning period", "period", ["Specific dates", "Summer", "Fall", "Spring"], value.period || "Specific dates")}
+  <div class="schedule-dates">${field("Start date", "startDate", value.startDate || "", "date")}${field("End date", "endDate", value.endDate || "", "date")}${field(employer ? "Expected hours per week" : "Maximum hours per week", "hours", value.hours || "", "number")}${select(employer ? "Work format" : "Work format preference", "format", employer ? ["In person", "Remote"] : ["Either", "In person", "Remote"], value.format || (employer ? "In person" : "Either"))}</div>
+  ${employer ? `<label class="check"><input type="checkbox" name="negotiable" ${value.negotiable ? "checked" : ""}> Scheduling is negotiable with the athlete</label>` : ""}
+  <div class="week-windows">${days.map(day => { const w = value.windows?.find(w=>w.day===day); return `<div class="day-window"><label class="check"><input type="checkbox" name="day-${day}" ${w ? "checked" : ""}>${day}</label><label>From (${day})<input type="time" name="start-${day}" value="${esc(w?.start || "13:00")}"></label><label>Until (${day})<input type="time" name="end-${day}" value="${esc(w?.end || "17:00")}"></label></div>`; }).join("")}</div><p class="schedule-error" role="alert"></p></fieldset>`;
+}
+function readSchedule(data, form) {
+  const windows = days.filter(day=>data[`day-${day}`]).map(day=>({day,start:data[`start-${day}`],end:data[`end-${day}`]}));
+  const error = data.endDate < data.startDate ? "End date must follow start date." : !(Number(data.hours)>0 && Number(data.hours)<=168) ? "Enter weekly hours between 0 and 168." : windows.some(w=>!w.start || !w.end || w.start>=w.end) ? "Each selected day needs an end time after its start time." : !windows.length && !data.negotiable ? "Select at least one day." : "";
+  if (error) { form.querySelector(".schedule-error").textContent=error; return null; }
+  for (const day of days) for (const prefix of ["day", "start", "end"]) delete data[`${prefix}-${day}`];
+  return {windows, startDate:data.startDate, endDate:data.endDate, period:data.period, hours:Number(data.hours), format:data.format, negotiable:!!data.negotiable};
+}
+
 function profile() {
   return (
     heading(
@@ -374,7 +401,7 @@ function profile() {
       "More than a student-athlete",
       "Help hosts understand your interests, strengths, and availability.",
     ) +
-    `<form id="profile-form" class="panel form-grid">${field("Full name", "name", state.athlete.name)}${field("University", "school", state.school)}${field("Sport", "sport", state.athlete.sport)}${select("Academic year", "year", ["Freshman", "Sophomore", "Junior", "Senior", "Graduate"], state.athlete.year)}${field("Major", "major", state.athlete.major)}${field("Career interests (comma-separated)", "interests", state.athlete.interests)}${field("Skills", "skills", state.athlete.skills)}${field("Preferred location", "location", state.athlete.location)}${select("Availability", "availability", ["Flexible", "Half day", "2 hours", "1 week", "5 hours/week", "10 hours/week", "Full time"], state.athlete.availability)}<p class="muted">Interest selection is not a validated career assessment. Use fictional information; avoid sensitive information.</p><button class="primary">Save profile</button></form>`
+    `<form id="profile-form" class="panel form-grid">${field("Full name", "name", state.athlete.name)}${field("University", "school", state.school)}${field("Sport", "sport", state.athlete.sport)}${select("Academic year", "year", ["Freshman", "Sophomore", "Junior", "Senior", "Graduate"], state.athlete.year)}${field("Major", "major", state.athlete.major)}${field("Career interests (comma-separated)", "interests", state.athlete.interests)}${field("Skills", "skills", state.athlete.skills)}${field("Preferred location", "location", state.athlete.location)}${scheduleFields(state.athlete, false)}<p class="muted">Interest selection is not a validated career assessment. Use fictional information; avoid sensitive information.</p><button class="primary">Save profile</button></form>`
   );
 }
 function myOpportunities() {
@@ -445,7 +472,7 @@ function createForm() {
       "Create an opportunity",
       "Create a sample experience. University staff must approve it before athletes can discover it.",
     ) +
-    `<form id="create-form" class="panel form-grid">${field("Opportunity title", "title")}${select("Industry", "industry", ["Finance", "Healthcare administration", "Technology", "Marketing", "Business operations"])}${select("Experience type", "type", ["Shadowing", "Company visit", "Externship", "Internship", "Fellowship", "Job"])}${field("Location", "location", state.athlete.location)}${select("Time commitment", "time", ["Half day", "2 hours", "1 week", "5 hours/week", "10 hours/week", "Full time"])}${field("Schedule / timing", "schedule")}${field("Compensation (state unpaid if applicable)", "compensation")}${field("Capacity", "capacity", 5, "number")}${field("Named host", "host", state.company.host)}${field("Description", "description")}${field("Learning goals", "goals")}${field("Eligibility / requirements", "requirements")}${field("Application or registration process", "process", "Register interest for host review.")}${select("Eligibility scope", "restricted", ["Participating school athletes", "Open eligibility"])}${select("Listing category", "category", ["Sample ASCEND partner experience", "Other sample internship or job"])}<button class="primary">Submit for staff approval</button></form>`
+    `<form id="create-form" class="panel form-grid">${field("Opportunity title", "title")}${select("Industry", "industry", ["Finance", "Healthcare administration", "Technology", "Marketing", "Business operations"])}${select("Experience type", "type", ["Shadowing", "Company visit", "Externship", "Internship", "Fellowship", "Job"])}${field("Location", "location", state.athlete.location)}${select("Time commitment", "time", ["Half day", "2 hours", "1 week", "5 hours/week", "10 hours/week", "Full time"])}${field("Schedule / timing", "schedule")}${scheduleFields({}, true)}${field("Compensation (state unpaid if applicable)", "compensation")}${field("Capacity", "capacity", 5, "number")}${field("Named host", "host", state.company.host)}${field("Description", "description")}${field("Learning goals", "goals")}${field("Eligibility / requirements", "requirements")}${field("Application or registration process", "process", "Register interest for host review.")}${select("Eligibility scope", "restricted", ["Participating school athletes", "Open eligibility"])}${select("Listing category", "category", ["Sample ASCEND partner experience", "Other sample internship or job"])}<button class="primary">Submit for staff approval</button></form>`
   );
 }
 function metrics(items) {
@@ -490,7 +517,7 @@ function participantRows(as, editable = false) {
     ? as
         .map((a) => {
           let o = state.opportunities.find((o) => o.id === a.opportunity);
-          return `<form class="panel participant form-grid" data-participant="${a.id}"><div><h3>${esc(state.athlete.name)}</h3><p>${esc(o.title)}</p><p>${esc(state.athlete.sport)} · ${esc(state.athlete.year)} · ${esc(state.athlete.major)}</p><p>Interests: ${esc(state.athlete.interests)}<br>Skills: ${esc(state.athlete.skills)}<br>Availability: ${esc(state.athlete.availability)} · ${esc(state.athlete.location)}</p></div>${select("Participation status", "status", statuses, a.status)}${field("Next step / scheduling / follow-up (simulated)", "next", a.next)}<label class="check"><input type="checkbox" name="attended" ${a.attended ? "checked" : ""}> Attendance recorded (sample)</label><button class="primary">Save participation update</button></form>`;
+          return `<form class="panel participant form-grid" data-participant="${a.id}"><div><h3>${esc(state.athlete.name)}</h3><p>${esc(o.title)}</p><p>${esc(state.athlete.sport)} · ${esc(state.athlete.year)} · ${esc(state.athlete.major)}</p><p>Interests: ${esc(state.athlete.interests)}<br>Skills: ${esc(state.athlete.skills)}<br>Availability: ${esc(scheduleSummary(state.athlete))} · ${esc(state.athlete.location)}</p></div>${select("Participation status", "status", statuses, a.status)}${field("Next step / scheduling / follow-up (simulated)", "next", a.next)}<label class="check"><input type="checkbox" name="attended" ${a.attended ? "checked" : ""}> Attendance recorded (sample)</label><button class="primary">Save participation update</button></form>`;
         })
         .join("")
     : '<div class="empty">No athlete interest yet. Switch to Student-athlete and register interest in an approved experience.</div>';
@@ -672,10 +699,12 @@ function bind() {
         fn(Object.fromEntries(new FormData(f)), f);
       };
   };
-  form("profile-form", (d) => {
+  form("profile-form", (d, f) => {
+    const scheduling = readSchedule(d, f);
+    if (!scheduling) return;
     state.school = d.school;
     delete d.school;
-    state.athlete = d;
+    state.athlete = { ...d, ...scheduling, availability: "See stated schedule" };
     persist();
     notify("Profile updated. Opportunity matches now reflect your choices.");
   });
@@ -713,8 +742,11 @@ function bind() {
         f.elements.capacity.setCustomValidity("");
       return;
     }
+    const scheduling = readSchedule(d, f);
+    if (!scheduling) return;
     state.opportunities.push({
       ...d,
+      ...scheduling,
       id: Date.now(),
       capacity: +d.capacity,
       company: state.company.name,
@@ -813,3 +845,4 @@ function bind() {
   }
 }
 render();
+

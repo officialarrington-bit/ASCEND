@@ -4,7 +4,7 @@ html = html.replace(
   /<script type="module" crossorigin src="([^"]+)"><\/script>/,
   (_, url) =>
     '<script type="module">' +
-    readFileSync("dist" + url, "utf8").replace(/<\/script/gi, "<\\/script") +
+    readFileSync("dist" + url, "utf8").replaceAll("/images/campbell-campus.jpg", "data:image/jpeg;base64," + readFileSync("public/images/campbell-campus.jpg").toString("base64")).replace(/<\/script/gi, "<\\/script") +
     "</script>",
 );
 html = html.replace(
@@ -13,3 +13,4 @@ html = html.replace(
 );
 writeFileSync("dist/ascend-demo.html", html);
 console.log("Created dist/ascend-demo.html: standalone, no server required.");
+
