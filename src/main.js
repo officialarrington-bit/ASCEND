@@ -1,4 +1,4 @@
-import { scheduleMatch, scheduleSummary, days } from "./scheduling.js";
+import { scheduleMatch, scheduleSummary, displayTime, days } from "./scheduling.js";
 import "./style.css";
 import { defaultTheme, resolveTheme } from "./theme.js";
 import { SCHOOL_CATALOGS, CAREER_INTERESTS, SKILL_OPTIONS } from "./catalog.js";
@@ -177,6 +177,14 @@ if (state.theme?.colors?.accent === "#b8502b") state.theme.colors.accent = defau
 if (state.theme?.imagery === null) delete state.theme.imagery;
 if (state.athlete?.name === "Jordan Ellis" && state.athlete.sport === "Soccer") state.athlete.sport = "Women's Soccer";
 if (state.athlete?.name === "Jordan Ellis" && state.athlete.major === "Business Administration") state.athlete.major = "Management, BBA";
+const sportAliases = {
+  "Women's Volleyball": "Volleyball",
+  "Men's Indoor Track & Field": "Men's Track & Field",
+  "Men's Outdoor Track & Field": "Men's Track & Field",
+  "Women's Indoor Track & Field": "Women's Track & Field",
+  "Women's Outdoor Track & Field": "Women's Track & Field",
+};
+if (sportAliases[state.athlete?.sport]) state.athlete.sport = sportAliases[state.athlete.sport];
 for (const sample of seed().opportunities) {
   const old = state.opportunities.find(o => o.id === sample.id && o.company === sample.company && o.schedule === sample.schedule);
   if (old && !old.windows && old.negotiable === undefined) {
@@ -240,6 +248,8 @@ const multiSelect = (label, name, values, current) => {
 const textArea = (label, name, value, maxlength) =>
   `<label class="wide-field">${label}<textarea name="${name}" maxlength="${maxlength}" rows="4">${esc(value || "")}</textarea></label>`;
 const timeOptions = Array.from({length:48}, (_,i) => `${String(Math.floor(i/2)).padStart(2,"0")}:${i%2 ? "30" : "00"}`);
+const timeSelect = (label, name, value) =>
+  `<label>${label}<select name="${name}">${timeOptions.map(t => `<option value="${t}" ${t === value ? "selected" : ""}>${displayTime(t)}</option>`).join("")}</select></label>`;
 function match(o) {
   let reasons = [];
   if (selectedValues(state.athlete.interests).includes(o.industry))
@@ -406,7 +416,7 @@ function scheduleFields(value, employer) {
   const status = value.availabilityStatus || (value.windows?.length ? "Set weekly availability" : "Add schedule later");
   const windows = days.map(day => {
     const w = value.windows?.find(item => item.day === day);
-    return `<div class="day-window"><label class="check"><input type="checkbox" name="day-${day}" ${w ? "checked" : ""}>${day}</label>${select("From", "start-"+day, timeOptions, w?.start || "13:00")}${select("Until", "end-"+day, timeOptions, w?.end || "17:00")}</div>`;
+    return `<div class="day-window"><label class="check"><input type="checkbox" name="day-${day}" ${w ? "checked" : ""}>${day}</label>${timeSelect("From", "start-"+day, w?.start || "13:00")}${timeSelect("Until", "end-"+day, w?.end || "17:00")}</div>`;
   }).join("");
   return `<fieldset class="schedule-editor"><legend>Your availability</legend>
     <p>You can save your profile now and add your actual available hours later. Times are Eastern.</p>
@@ -424,7 +434,13 @@ function readSchedule(data, form, employer=false) {
   }
   const windows = days.filter(day=>data[`day-${day}`]).map(day=>({day,start:data[`start-${day}`],end:data[`end-${day}`]}));
   const error = (!!data.startDate !== !!data.endDate) ? "Enter both dates, or leave both blank." : data.startDate && data.endDate < data.startDate ? "End date must follow start date." : !(Number(data.hours)>0 && Number(data.hours)<=168) ? "Select weekly hours." : windows.some(w=>!w.start || !w.end || w.start>=w.end) ? "Each selected day needs an end time after its start time." : !windows.length && !data.negotiable ? "Select at least one day." : "";
-  if (error) { form.querySelector(".schedule-error").textContent=error; return null; }
+  if (error) {
+    const message = form.querySelector(".schedule-error");
+    message.textContent = error;
+    message.scrollIntoView({block:"center", behavior:"smooth"});
+    return null;
+  }
+  form.querySelector(".schedule-error").textContent = "";
   for (const day of days) for (const prefix of ["day", "start", "end"]) delete data[`${prefix}-${day}`];
   return {windows, startDate:data.startDate, endDate:data.endDate, period:data.period, hours:Number(data.hours), format:data.format, negotiable:!!data.negotiable, ...(!employer && {availabilityStatus:"Set weekly availability"})};
 }
@@ -776,13 +792,18 @@ function bind() {
     const values = new FormData(f);
     d.interests = values.getAll("interests").join(", ");
     d.skills = values.getAll("skills").join(", ");
-    if (!d.interests) { f.querySelector('.multi-select .multi-options')?.scrollIntoView({block:'center'}); f.querySelector('.profile-error').textContent = "Select at least one career interest."; return; }
-    if (!d.skills) { f.querySelector('.profile-error').textContent = "Select at least one skill."; return; }
     f.querySelector('.profile-error').textContent = "";
-    state.school = d.school;
+    const nextSchool = d.school;
     delete d.school;
-    state.athlete = { ...d, ...scheduling, availability: scheduling.windows.length ? "See stated schedule" : "Availability to confirm" };
-    persist();
+    const athlete = { ...d, ...scheduling, availability: scheduling.windows.length ? "See stated schedule" : "Availability to confirm" };
+    try {
+      localStorage.setItem(KEY, JSON.stringify({...state, school:nextSchool, athlete}));
+    } catch {
+      f.querySelector('.profile-error').textContent = "Your browser blocked saving. Open the demo in a regular browser tab and allow site storage, then try again.";
+      return;
+    }
+    state.school = nextSchool;
+    state.athlete = athlete;
     notify("Profile updated. Opportunity matches now reflect your choices.");
   });
   form("company-form", (d) => {

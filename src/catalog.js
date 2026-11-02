@@ -115,7 +115,8 @@ export const CAMPBELL_MAJORS = [
   "Trust and Wealth Management, Pre-Law, BBA"
 ];
 
-// Campbell's 21 NCAA varsity sports. Indoor and outdoor track are distinct teams.
+// Campbell varsity sport labels for the ASCEND profile. Track disciplines are
+// grouped for easier selection; the underlying varsity programs remain distinct.
 // https://gocamels.com/news/2023/7/1/news-campbell-begins-new-era-as-caa-member.aspx
 export const CAMPBELL_SPORTS = [
   "Baseball",
@@ -133,11 +134,9 @@ export const CAMPBELL_SPORTS = [
   "Women's Swimming",
   "Men's Tennis",
   "Women's Tennis",
-  "Men's Indoor Track & Field",
-  "Women's Indoor Track & Field",
-  "Men's Outdoor Track & Field",
-  "Women's Outdoor Track & Field",
-  "Women's Volleyball",
+  "Men's Track & Field",
+  "Women's Track & Field",
+  "Volleyball",
   "Wrestling"
 ];
 
