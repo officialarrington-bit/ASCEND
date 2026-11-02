@@ -1,6 +1,7 @@
-import { scheduleMatch, scheduleSummary, days } from "./scheduling.js";
+import { scheduleMatch, scheduleSummary, displayTime, days } from "./scheduling.js";
 import "./style.css";
 import { defaultTheme, resolveTheme } from "./theme.js";
+import { SCHOOL_CATALOGS, CAREER_INTERESTS, SKILL_OPTIONS } from "./catalog.js";
 const arrow =
   '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path d="M5 19 19 5M5 5h14v14"/></svg>';
 const KEY = "ascend-demo-v1";
@@ -13,13 +14,16 @@ const seed = () => ({
   },
   athlete: {
     name: "Jordan Ellis",
-    sport: "Soccer",
+    headline: "Student-athlete exploring finance and technology",
+    about: "I am building my career direction through conversations and hands-on experiences.",
+    sport: "Women's Soccer",
     year: "Junior",
-    major: "Business Administration",
+    major: "Management, BBA",
     interests: "Finance, Technology",
-    skills: "Teamwork, Excel, leadership",
+    skills: "Teamwork, Excel, Leadership",
     location: "Raleigh, NC",
     availability: "Flexible",
+    availabilityStatus: "Add schedule later",
   },
   company: {
     name: "Oakline Financial",
@@ -171,6 +175,16 @@ try {
 }
 if (state.theme?.colors?.accent === "#b8502b") state.theme.colors.accent = defaultTheme.colors.accent;
 if (state.theme?.imagery === null) delete state.theme.imagery;
+if (state.athlete?.name === "Jordan Ellis" && state.athlete.sport === "Soccer") state.athlete.sport = "Women's Soccer";
+if (state.athlete?.name === "Jordan Ellis" && state.athlete.major === "Business Administration") state.athlete.major = "Management, BBA";
+const sportAliases = {
+  "Women's Volleyball": "Volleyball",
+  "Men's Indoor Track & Field": "Men's Track & Field",
+  "Men's Outdoor Track & Field": "Men's Track & Field",
+  "Women's Indoor Track & Field": "Women's Track & Field",
+  "Women's Outdoor Track & Field": "Women's Track & Field",
+};
+if (sportAliases[state.athlete?.sport]) state.athlete.sport = sportAliases[state.athlete.sport];
 for (const sample of seed().opportunities) {
   const old = state.opportunities.find(o => o.id === sample.id && o.company === sample.company && o.schedule === sample.schedule);
   if (old && !old.windows && old.negotiable === undefined) {
@@ -226,9 +240,19 @@ const field = (label, name, value = "", type = "text", required = true) =>
   `<label>${label}<input name="${name}" type="${type}" value="${esc(value)}" ${required ? "required" : ""}></label>`;
 const select = (label, name, values, value = "") =>
   `<label>${label}<select name="${name}">${option(values, value)}</select></label>`;
+const selectedValues = (value) => Array.isArray(value) ? value : String(value || "").split(",").map(s => s.trim()).filter(Boolean);
+const multiSelect = (label, name, values, current) => {
+  const chosen = selectedValues(current).map(v => values.find(item => item.toLowerCase() === v.toLowerCase()) || v);
+  return `<fieldset class="multi-select"><legend>${esc(label)}</legend><details><summary>${chosen.length ? esc(chosen.join(", ")) : "Choose one or more"}</summary><div class="multi-options">${values.map(v => `<label class="check"><input type="checkbox" name="${name}" value="${esc(v)}" ${chosen.includes(v) ? "checked" : ""}>${esc(v)}</label>`).join("")}</div></details></fieldset>`;
+};
+const textArea = (label, name, value, maxlength) =>
+  `<label class="wide-field">${label}<textarea name="${name}" maxlength="${maxlength}" rows="4">${esc(value || "")}</textarea></label>`;
+const timeOptions = Array.from({length:48}, (_,i) => `${String(Math.floor(i/2)).padStart(2,"0")}:${i%2 ? "30" : "00"}`);
+const timeSelect = (label, name, value) =>
+  `<label>${label}<select name="${name}">${timeOptions.map(t => `<option value="${t}" ${t === value ? "selected" : ""}>${displayTime(t)}</option>`).join("")}</select></label>`;
 function match(o) {
   let reasons = [];
-  if (state.athlete.interests.toLowerCase().includes(o.industry.toLowerCase()))
+  if (selectedValues(state.athlete.interests).includes(o.industry))
     reasons.push("Matches your " + o.industry.toLowerCase() + " interest");
   reasons.push(scheduleMatch(state.athlete, o).label);
   return reasons;
@@ -304,7 +328,7 @@ function schoolSettings() {
 function hero() {
   const t = resolveTheme(state);
   const media = t.imagery
-    ? `<figure class="hero-photo"><img src="${esc(t.imagery.src)}" alt="${esc(t.imagery.alt)}"><figcaption><a href="${esc(t.imagery.sourceUrl)}" target="_blank" rel="noopener">${esc(t.imagery.credit)}</a> · <a href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank" rel="noopener">${esc(t.imagery.license)}</a> · Cropped for display</figcaption></figure>`
+    ? `<figure class="hero-photo"><img src="${esc(t.imagery.src)}" alt="${esc(t.imagery.alt)}"><figcaption><a href="${esc(t.imagery.sourceUrl)}" target="_blank" rel="noopener">${esc(t.imagery.credit)}</a> · ${t.imagery.license.startsWith("CC ") ? `<a href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank" rel="noopener">${esc(t.imagery.license)}</a>` : esc(t.imagery.license)} · Cropped for display</figcaption></figure>`
     : `<div class="hero-track" aria-hidden="true"><svg class="track-graphic" viewBox="0 0 520 400" fill="none"><path d="M80 480V225C80 45 465 45 465 225V480M117 480V225C117 92 428 92 428 225V480M154 480V225C154 139 391 139 391 225V480M191 480V225C191 186 354 186 354 225V480" stroke="currentColor" stroke-width="1.5"/><path d="m236 297 75-75m-74 0h74v74" stroke="var(--accent)" stroke-width="15"/><path d="M30 350h470M30 370h470" stroke="currentColor" stroke-width="1"/></svg><div class="track-caption"><span>DRIVE. DISCIPLINE. DIRECTION.</span><strong>YOUR NEXT<br>STARTING LINE.</strong></div><div class="track-number">01 / THE NEXT CHAPTER</div></div>`;
   return `<section class="program-hero" aria-labelledby="hero-title"><div class="hero-copy"><div class="eyebrow">${esc(programName())} / PROPOSED PROGRAM</div><h1 id="hero-title">BUILD WHAT<br>COMES AFTER<br><span>THE GAME.</span></h1><p>Your sport. Your schedule. Your next chapter. Discover career experiences designed to fit life as a ${esc(t.shortName)} student-athlete.</p><div class="hero-actions"><button class="primary" data-action="explore">Explore Opportunities ${arrow}</button><button class="hero-secondary" data-action="employers">For Employers ${arrow}</button></div><span class="hero-disclaimer">Buies Creek, North Carolina · Built with student-athletes in mind.</span></div>${media}</section>
  <div class="program-path" aria-label="How the proposed program works">${[
@@ -317,7 +341,8 @@ function hero() {
      ([n, title, desc]) =>
        `<div><span>${n}</span><div><strong>${title}</strong><p>${desc}</p></div></div>`,
    )
-   .join("")}</div>`;
+   .join("")}</div>
+ <section class="campus-bridge"><img src="/images/campbell-campus.jpg" alt="Campbell University campus in Buies Creek"><div><span class="eyebrow">ROOTED IN BUIES CREEK</span><h2>Built for the whole student-athlete journey.</h2><p>Explore meaningful experience while you compete, then carry the connections forward.</p><small>Campus photo: <a href="https://commons.wikimedia.org/wiki/File:CampbellUniversityStudentUnionPanorama.jpg" target="_blank" rel="noopener">Stormsnsnow / Wikimedia Commons</a> · <a href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank" rel="noopener">CC BY-SA 4.0</a> · Cropped for display</small></div></section>`;
 }
 function board() {
   const list = state.opportunities.filter(
@@ -379,29 +404,70 @@ function details() {
     )}</dl>${match(o).length ? `<div class="note">${match(o).map(esc).join(" · ")}</div>` : ""}<p class="muted">Simulated activity only. Hosts make selection decisions; participation and employment are not guaranteed.</p>${role === "Student-athlete" && o.approved ? `<button class="primary" data-apply="${o.id}" ${a ? "disabled" : ""}>${a ? "Interest submitted" : /Shadowing|Company visit/.test(o.type) ? "Register interest (simulated)" : "Submit application (simulated)"}</button>` : ""}</section></div>`;
 }
 
-function scheduleFields(value, employer) {
+function legacyScheduleFields(value, employer) {
   return `<fieldset class="schedule-editor"><legend>${employer ? "Required schedule" : "Your availability"}</legend><p>Enter one window per day, in Eastern time. ${employer ? "Select required days, or mark scheduling negotiable." : "Select days you are available. Unselected days are unavailable."}</p>
   ${select("Planning period", "period", ["Specific dates", "Summer", "Fall", "Spring"], value.period || "Specific dates")}
   <div class="schedule-dates">${field("Start date", "startDate", value.startDate || "", "date")}${field("End date", "endDate", value.endDate || "", "date")}${field(employer ? "Expected hours per week" : "Maximum hours per week", "hours", value.hours || "", "number")}${select(employer ? "Work format" : "Work format preference", "format", employer ? ["In person", "Remote"] : ["Either", "In person", "Remote"], value.format || (employer ? "In person" : "Either"))}</div>
   ${employer ? `<label class="check"><input type="checkbox" name="negotiable" ${value.negotiable ? "checked" : ""}> Scheduling is negotiable with the athlete</label>` : ""}
   <div class="week-windows">${days.map(day => { const w = value.windows?.find(w=>w.day===day); return `<div class="day-window"><label class="check"><input type="checkbox" name="day-${day}" ${w ? "checked" : ""}>${day}</label><label>From (${day})<input type="time" name="start-${day}" value="${esc(w?.start || "13:00")}"></label><label>Until (${day})<input type="time" name="end-${day}" value="${esc(w?.end || "17:00")}"></label></div>`; }).join("")}</div><p class="schedule-error" role="alert"></p></fieldset>`;
 }
-function readSchedule(data, form) {
+function scheduleFields(value, employer) {
+  if (employer) return legacyScheduleFields(value, true);
+  const status = value.availabilityStatus || (value.windows?.length ? "Set weekly availability" : "Add schedule later");
+  const windows = days.map(day => {
+    const w = value.windows?.find(item => item.day === day);
+    return `<div class="day-window"><label class="check"><input type="checkbox" name="day-${day}" ${w ? "checked" : ""}>${day}</label>${timeSelect("From", "start-"+day, w?.start || "13:00")}${timeSelect("Until", "end-"+day, w?.end || "17:00")}</div>`;
+  }).join("");
+  return `<fieldset class="schedule-editor"><legend>Your availability</legend>
+    <p>You can save your profile now and add your actual available hours later. Times are Eastern.</p>
+    ${select("Availability", "availabilityStatus", ["Add schedule later","Set weekly availability"], status)}
+    <div id="athlete-schedule">
+      ${select("Planning period", "period", ["Specific dates","Summer","Fall","Spring"], value.period || "Specific dates")}
+      <div class="schedule-dates">${field("Start date", "startDate", value.startDate || "", "date", false)}${field("End date", "endDate", value.endDate || "", "date", false)}${select("Maximum hours per week", "hours", ["","5","10","15","20","25","30","35","40"], String(value.hours || ""))}${select("Work format preference", "format", ["Either","In person","Remote"], value.format || "Either")}</div>
+      <div class="week-windows">${windows}</div>
+    </div><p class="schedule-error" role="alert"></p>
+  </fieldset>`;
+}
+function readSchedule(data, form, employer=false) {
+  if (!employer && data.availabilityStatus === "Add schedule later") {
+    return {windows:[],startDate:"",endDate:"",period:data.period || "Specific dates",hours:0,format:data.format || "Either",negotiable:false,availabilityStatus:"Add schedule later"};
+  }
   const windows = days.filter(day=>data[`day-${day}`]).map(day=>({day,start:data[`start-${day}`],end:data[`end-${day}`]}));
-  const error = data.endDate < data.startDate ? "End date must follow start date." : !(Number(data.hours)>0 && Number(data.hours)<=168) ? "Enter weekly hours between 0 and 168." : windows.some(w=>!w.start || !w.end || w.start>=w.end) ? "Each selected day needs an end time after its start time." : !windows.length && !data.negotiable ? "Select at least one day." : "";
-  if (error) { form.querySelector(".schedule-error").textContent=error; return null; }
+  const error = (!!data.startDate !== !!data.endDate) ? "Enter both dates, or leave both blank." : data.startDate && data.endDate < data.startDate ? "End date must follow start date." : !(Number(data.hours)>0 && Number(data.hours)<=168) ? "Select weekly hours." : windows.some(w=>!w.start || !w.end || w.start>=w.end) ? "Each selected day needs an end time after its start time." : !windows.length && !data.negotiable ? "Select at least one day." : "";
+  if (error) {
+    const message = form.querySelector(".schedule-error");
+    message.textContent = error;
+    message.scrollIntoView({block:"center", behavior:"smooth"});
+    return null;
+  }
+  form.querySelector(".schedule-error").textContent = "";
   for (const day of days) for (const prefix of ["day", "start", "end"]) delete data[`${prefix}-${day}`];
-  return {windows, startDate:data.startDate, endDate:data.endDate, period:data.period, hours:Number(data.hours), format:data.format, negotiable:!!data.negotiable};
+  return {windows, startDate:data.startDate, endDate:data.endDate, period:data.period, hours:Number(data.hours), format:data.format, negotiable:!!data.negotiable, ...(!employer && {availabilityStatus:"Set weekly availability"})};
 }
 
 function profile() {
+  const catalog = SCHOOL_CATALOGS[state.school] || SCHOOL_CATALOGS["Campbell University"];
   return (
     heading(
       "YOUR STORY",
       "More than a student-athlete",
       "Help hosts understand your interests, strengths, and availability.",
     ) +
-    `<form id="profile-form" class="panel form-grid">${field("Full name", "name", state.athlete.name)}${field("University", "school", state.school)}${field("Sport", "sport", state.athlete.sport)}${select("Academic year", "year", ["Freshman", "Sophomore", "Junior", "Senior", "Graduate"], state.athlete.year)}${field("Major", "major", state.athlete.major)}${field("Career interests (comma-separated)", "interests", state.athlete.interests)}${field("Skills", "skills", state.athlete.skills)}${field("Preferred location", "location", state.athlete.location)}${scheduleFields(state.athlete, false)}<p class="muted">Interest selection is not a validated career assessment. Use fictional information; avoid sensitive information.</p><button class="primary">Save profile</button></form>`
+    `<section class="profile-preview panel"><span class="eyebrow">PROFILE PREVIEW</span><h2>${esc(state.athlete.name)}</h2><strong>${esc(state.athlete.headline || "Add a headline")}</strong><p>${esc(state.athlete.sport)} · ${esc(state.athlete.major)} · ${esc(state.school)}</p><h3>About</h3><p>${esc(state.athlete.about || "Add a short introduction.")}</p></section>
+    <form id="profile-form" class="panel form-grid">
+      ${field("Full name", "name", state.athlete.name)}
+      ${select("University", "school", Object.keys(SCHOOL_CATALOGS), state.school)}
+      ${select("Sport", "sport", catalog.sports, state.athlete.sport)}
+      ${select("Academic year", "year", ["Freshman","Sophomore","Junior","Senior","Graduate"], state.athlete.year)}
+      ${select("Major", "major", catalog.majors, state.athlete.major)}
+      ${select("Preferred location", "location", ["Buies Creek, NC","Raleigh, NC","Durham, NC","Remote","Anywhere in North Carolina","Open to relocation"], state.athlete.location)}
+      ${field("Headline", "headline", state.athlete.headline || "")}
+      ${textArea("About", "about", state.athlete.about || "", 1000)}
+      ${multiSelect("Career interests", "interests", CAREER_INTERESTS, state.athlete.interests)}
+      ${multiSelect("Skills", "skills", SKILL_OPTIONS, state.athlete.skills)}
+      ${scheduleFields(state.athlete, false)}
+      <p class="muted">Interest selection is not a validated career assessment. Use fictional information; avoid sensitive information.</p><p class="profile-error" role="alert"></p><button class="primary">Save profile</button>
+    </form>`
   );
 }
 function myOpportunities() {
@@ -472,7 +538,7 @@ function createForm() {
       "Create an opportunity",
       "Create a sample experience. University staff must approve it before athletes can discover it.",
     ) +
-    `<form id="create-form" class="panel form-grid">${field("Opportunity title", "title")}${select("Industry", "industry", ["Finance", "Healthcare administration", "Technology", "Marketing", "Business operations"])}${select("Experience type", "type", ["Shadowing", "Company visit", "Externship", "Internship", "Fellowship", "Job"])}${field("Location", "location", state.athlete.location)}${select("Time commitment", "time", ["Half day", "2 hours", "1 week", "5 hours/week", "10 hours/week", "Full time"])}${field("Schedule / timing", "schedule")}${scheduleFields({}, true)}${field("Compensation (state unpaid if applicable)", "compensation")}${field("Capacity", "capacity", 5, "number")}${field("Named host", "host", state.company.host)}${field("Description", "description")}${field("Learning goals", "goals")}${field("Eligibility / requirements", "requirements")}${field("Application or registration process", "process", "Register interest for host review.")}${select("Eligibility scope", "restricted", ["Participating school athletes", "Open eligibility"])}${select("Listing category", "category", ["Sample ASCEND partner experience", "Other sample internship or job"])}<button class="primary">Submit for staff approval</button></form>`
+    `<form id="create-form" class="panel form-grid">${field("Opportunity title", "title")}${select("Industry", "industry", CAREER_INTERESTS)}${select("Experience type", "type", ["Shadowing", "Company visit", "Externship", "Internship", "Fellowship", "Job"])}${field("Location", "location", state.athlete.location)}${select("Time commitment", "time", ["Half day", "2 hours", "1 week", "5 hours/week", "10 hours/week", "Full time"])}${field("Schedule / timing", "schedule")}${scheduleFields({}, true)}${field("Compensation (state unpaid if applicable)", "compensation")}${field("Capacity", "capacity", 5, "number")}${field("Named host", "host", state.company.host)}${field("Description", "description")}${field("Learning goals", "goals")}${field("Eligibility / requirements", "requirements")}${field("Application or registration process", "process", "Register interest for host review.")}${select("Eligibility scope", "restricted", ["Participating school athletes", "Open eligibility"])}${select("Listing category", "category", ["Sample ASCEND partner experience", "Other sample internship or job"])}<button class="primary">Submit for staff approval</button></form>`
   );
 }
 function metrics(items) {
@@ -699,13 +765,45 @@ function bind() {
         fn(Object.fromEntries(new FormData(f)), f);
       };
   };
+  const scheduleStatus = document.querySelector('#profile-form [name="availabilityStatus"]');
+  if (scheduleStatus) {
+    const updateSchedule = () => {
+      const enabled = scheduleStatus.value === "Set weekly availability";
+      const section = document.querySelector("#athlete-schedule");
+      section.hidden = !enabled;
+      section.querySelectorAll("input,select").forEach(control => control.disabled = !enabled);
+    };
+    scheduleStatus.onchange = updateSchedule;
+    updateSchedule();
+  }
+  const schoolChoice = document.querySelector('#profile-form [name="school"]');
+  if (schoolChoice) schoolChoice.onchange = () => {
+    const catalog = SCHOOL_CATALOGS[schoolChoice.value];
+    if (!catalog) return;
+    for (const [name, values] of [["sport",catalog.sports],["major",catalog.majors]]) {
+      const control = document.querySelector(`#profile-form [name="${name}"]`);
+      const old = control.value;
+      control.innerHTML = option(values, values.includes(old) ? old : values[0]);
+    }
+  };
   form("profile-form", (d, f) => {
     const scheduling = readSchedule(d, f);
     if (!scheduling) return;
-    state.school = d.school;
+    const values = new FormData(f);
+    d.interests = values.getAll("interests").join(", ");
+    d.skills = values.getAll("skills").join(", ");
+    f.querySelector('.profile-error').textContent = "";
+    const nextSchool = d.school;
     delete d.school;
-    state.athlete = { ...d, ...scheduling, availability: "See stated schedule" };
-    persist();
+    const athlete = { ...d, ...scheduling, availability: scheduling.windows.length ? "See stated schedule" : "Availability to confirm" };
+    try {
+      localStorage.setItem(KEY, JSON.stringify({...state, school:nextSchool, athlete}));
+    } catch {
+      f.querySelector('.profile-error').textContent = "Your browser blocked saving. Open the demo in a regular browser tab and allow site storage, then try again.";
+      return;
+    }
+    state.school = nextSchool;
+    state.athlete = athlete;
     notify("Profile updated. Opportunity matches now reflect your choices.");
   });
   form("company-form", (d) => {
@@ -742,7 +840,7 @@ function bind() {
         f.elements.capacity.setCustomValidity("");
       return;
     }
-    const scheduling = readSchedule(d, f);
+    const scheduling = readSchedule(d, f, true);
     if (!scheduling) return;
     state.opportunities.push({
       ...d,
