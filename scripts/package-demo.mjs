@@ -1,10 +1,16 @@
 import { readFileSync, writeFileSync } from "node:fs";
 let html = readFileSync("dist/index.html", "utf8");
+const images = [
+  ["chase-arrington-headshot.webp", "image/webp"],
+  ["campbell-volleyball-champions.webp", "image/webp"],
+  ["kamden-sixkiller-2026.webp", "image/webp"],
+  ["campbell-athletics-c.svg", "image/svg+xml"],
+];
 html = html.replace(
   /<script type="module" crossorigin src="([^"]+)"><\/script>/,
   (_, url) =>
     '<script type="module">' +
-    readFileSync("dist" + url, "utf8").replaceAll("/images/campbell-campus.jpg", "data:image/jpeg;base64," + readFileSync("public/images/campbell-campus.jpg").toString("base64")).replace(/<\/script/gi, "<\\/script") +
+    images.reduce((js, [name, mime]) => js.replaceAll("/images/" + name, `data:${mime};base64,` + readFileSync("public/images/" + name).toString("base64")), readFileSync("dist" + url, "utf8")).replace(/<\/script/gi, "<\\/script") +
     "</script>",
 );
 html = html.replace(

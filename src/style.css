@@ -1556,3 +1556,235 @@ footer span {
 @media(max-width:600px) { .schedule-dates {grid-template-columns:1fr;} .schedule-editor {padding:12px;} .day-window {grid-template-columns:58px 1fr 1fr;gap:6px;padding:6px;} .hero-photo {display:block;min-height:200px;} .hero-photo img {min-height:200px;max-height:240px;} }
 .primary:hover { background:#ff934f; border-color:#ff934f; }
 .brand-arrow { color:#1e252b; }
+
+.hero-photo img { object-position:50% 40%; }
+.hero-rally { color:#f47725; font-size:18px; font-weight:900; letter-spacing:.12em; margin:22px 0 10px; }
+.hero-photo img { object-position:50% 40%; }
+.profile-preview { border-top-color:var(--accent); }
+.profile-preview h2 { margin:12px 0 7px; font-size:30px; }
+.profile-preview > strong { font-size:17px; }
+.profile-preview h3 { margin-top:20px; }
+.profile-preview p { max-width:800px; font-size:14px; white-space:pre-line; }
+.form-grid textarea { width:100%; min-height:112px; padding:12px; font:inherit; resize:vertical; border:1px solid var(--line); }
+.form-grid .wide-field, .form-grid .profile-error { grid-column:1/-1; }
+.multi-select { min-width:0; border:0; padding:0; margin:0; }
+.multi-select legend { font-size:11px; font-weight:700; margin-bottom:9px; }
+.multi-select details { border:1px solid var(--line); background:white; }
+.multi-select summary { cursor:pointer; padding:12px; max-height:82px; overflow:auto; }
+.multi-options { max-height:240px; overflow:auto; display:grid; gap:10px; padding:12px; border-top:1px solid var(--line); }
+.multi-options label { font-size:12px; font-weight:500; }
+.profile-error { color:#9e3d14!important; font-weight:700; margin:0; }
+#athlete-schedule[hidden] { display:none; }
+@media(max-width:600px) { .multi-select {grid-column:1/-1;} }
+.athletics-mark { width:27px; height:42px; object-fit:contain; flex:none; margin-right:1px; }
+.rooted-panel { display:grid; grid-template-columns:45% 55%; margin:32px 0 0; background:#1e252b; color:#fff; min-height:260px; overflow:hidden; }
+.rooted-panel > img { display:block; width:100%; height:100%; min-height:260px; object-fit:cover; object-position:50% 48%; }
+.rooted-copy { padding:30px 38px; }
+.rooted-copy .eyebrow { color:#ff9d62; }
+.rooted-copy h2 { font-size:clamp(24px,2.5vw,34px); line-height:1.08; letter-spacing:-.025em; margin:10px 0; }
+.rooted-copy p { font-size:13px; line-height:1.55; max-width:500px; margin:0 0 16px; }
+.rooted-copy .primary { display:inline-flex; align-items:center; gap:10px; }
+.rooted-copy .primary svg { width:16px; }
+.rooted-copy small { display:block; color:#d8d8d8; margin-top:15px; font-size:10px; line-height:1.4; }
+.rooted-copy a { color:#fff; }
+@media(max-width:700px){.athletics-mark{width:21px;height:34px}.hero-rally{margin:16px 0 8px;font-size:14px}}
+@media(max-width:700px){.rooted-panel{grid-template-columns:1fr}.rooted-panel > img{height:200px;min-height:200px}.rooted-copy{padding:24px}}
+@media(max-width:420px){.athletics-mark{display:none}}
+.program-path .path-step{display:flex;align-items:flex-start;gap:16px;text-align:left;background:transparent;color:inherit;border:0;border-right:1px solid #d9d9d9;padding:20px;cursor:pointer;font:inherit}
+.program-path .path-step:hover,.program-path .path-step:focus-visible{background:#fff1e5;outline:2px solid var(--accent);outline-offset:-2px}
+.path-step>span{font-weight:800;color:var(--accent)}
+.path-step strong{font-size:13px}.path-step p{font-size:13px;line-height:1.5}
+.profile-preview{padding:0;overflow:hidden}.profile-cover{display:flex;justify-content:space-between;gap:20px;padding:24px 32px 64px;background:#171717;color:white;border-top:6px solid var(--accent);font-weight:800;letter-spacing:2px}.profile-cover span:last-child{color:#ff9b53}
+.profile-body{padding:0 32px 32px;max-width:1000px}.profile-avatar{width:110px;height:110px;background:var(--accent);color:white;border:5px solid white;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:36px;font-weight:800;margin-top:-45px;margin-bottom:20px;position:relative;overflow:hidden}.profile-avatar img{width:100%;height:100%;object-fit:cover}.profile-body>p{line-height:1.75}.profile-body h2{margin:10px 0}.profile-body h3{margin:24px 0 10px}.profile-tags{display:flex;flex-wrap:wrap;gap:8px}.profile-tools{display:flex;flex-wrap:wrap;gap:12px;margin:20px 0}.profile-tools label{max-width:300px}.profile-tools input{display:block;max-width:100%;margin-top:8px}.profile-error:not(:empty){color:#9c2415;background:#fff0ed;padding:14px;grid-column:1/-1}.multi-options{max-height:290px;overflow-y:auto}.wide-field small,#photo-status{display:block;margin-top:8px}.profile-preview .note{font-size:13px}
+@media(max-width:600px){.profile-cover{padding:20px 20px 60px;letter-spacing:1px;font-size:12px}.profile-body{padding:0 20px 24px}.program-path .path-step{border-right:0;border-bottom:1px solid #ddd}}
+.connection-intro {border-top:4px solid #f47725}
+.connection-filters {display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px;align-items:end}
+.connection-grid {align-items:stretch}
+.connection-card {display:flex;flex-direction:column;gap:8px}
+.connection-card-top {display:flex;align-items:center;gap:16px;min-height:64px;margin-bottom:10px}
+.connection-card-top .eyebrow {margin:0;line-height:1.4}
+.connection-card h3,.connection-card p {margin:4px 0}
+.connection-card .secondary {margin-top:auto}
+.connection-avatar {flex:0 0 64px;width:64px;height:64px;overflow:hidden;background:#20272c;color:#fff;display:grid;place-items:center;font-weight:700;border-radius:50%}
+.connection-detail {margin:32px 0;border-top:5px solid #f47725;scroll-margin-top:24px}
+.connection-columns {display:grid;grid-template-columns:1fr 1fr;gap:32px}
+.connection-columns li {margin:12px 0}
+.connection-detail textarea,.connection-followup textarea {min-height:110px}
+.connection-tracker {margin-top:48px}
+.connection-followup,.resume-file {margin-top:20px}
+.resume-panel {margin:24px 0}
+.resume-file {padding:20px;background:#f4f4f1;border-radius:8px}
+@media(max-width:800px){.connection-filters,.connection-columns{grid-template-columns:1fr}.connection-card{min-width:0}}
+.connection-detail > .text-button{display:block;margin-bottom:16px}
+.connection-detail > h2{margin:16px 0 8px}
+.connection-columns{margin-top:24px}
+
+.connection-avatar img {width:100%;height:100%;object-fit:cover;object-position:center 25%;border-radius:50%}
+.connection-profile-photo {display:block;width:112px;height:112px;object-fit:cover;object-position:center 25%;border-radius:50%;margin-top:16px}
+/* Profile sections: one idea per block, with breathing room on small screens. */
+.connection-detail {max-width:980px;margin:36px auto;padding:30px 34px 36px;line-height:1.55}
+.connection-detail > h2 {margin:12px 0 6px}
+.connection-detail > .muted {margin:12px 0 0}
+.connection-detail > .note {margin:22px 0 0}
+.connection-columns {gap:48px;margin-top:28px}
+.profile-section {border-top:1px solid var(--line);padding-top:24px;margin-top:24px}
+.profile-section h3 {margin:0 0 16px;line-height:1.25}
+.profile-section p {margin:0 0 14px;line-height:1.65;font-size:14px}
+.profile-section p:last-child,.profile-section ul:last-child {margin-bottom:0}
+.profile-section li {margin:0 0 12px;line-height:1.55}
+.profile-section ul {padding-left:20px;margin:0}
+.connection-detail .profile-tags {margin-top:14px}
+.connection-detail .profile-section .muted {margin-top:18px}
+.connection-detail #connection-request {margin-top:30px;gap:20px 24px}
+.connection-detail #connection-request > .wide-field.muted {margin:0}
+.intro-preview {background:#faf8f5;padding:24px;border:1px solid var(--line);border-radius:8px}
+.athlete-profile-section {border-top:1px solid var(--line);margin-top:28px;padding-top:24px}
+.profile-body .athlete-profile-section h3 {margin:0 0 12px;line-height:1.25}
+.profile-body .athlete-profile-section p {margin:0;line-height:1.7;font-size:14px}
+.profile-body .athlete-profile-section .profile-tags {margin-top:12px}
+.resume-panel {margin:28px 0;padding:28px 34px}
+.resume-panel h2 {margin:0 0 10px}
+.resume-panel > p {margin:0 0 18px;line-height:1.6;font-size:14px}
+.resume-panel > small {display:block;margin-top:14px;color:var(--muted)}
+.resume-file {display:flex;align-items:center;flex-wrap:wrap;gap:12px;padding:14px 16px;margin-top:18px}
+.resume-file strong {margin-right:auto;overflow-wrap:anywhere}
+@media(max-width:800px){.connection-detail{padding:24px}.connection-columns{gap:0}.connection-columns > div + div{margin-top:0}}
+@media(max-width:600px){.connection-detail{padding:20px}.profile-section{padding-top:20px;margin-top:20px}.resume-panel{padding:22px}.athlete-profile-section{margin-top:22px;padding-top:20px}}
+/* Athlete profile: compact overview, one résumé section, editing on demand. */
+.athlete-identity{display:flex;align-items:flex-start;justify-content:space-between;gap:24px;margin-top:8px}
+.athlete-identity>div{min-width:0}
+.profile-body .athlete-identity h2{margin:0 0 8px}
+.profile-body .athlete-headline{margin:0;font-size:15px;font-weight:650;line-height:1.55}
+.athlete-identity>button{flex-shrink:0}
+.athlete-facts{display:flex;flex-wrap:wrap;gap:18px 28px;margin:22px 0 0;padding:18px 0;border-top:1px solid var(--line)}
+.athlete-facts>div{min-width:100px;max-width:100%}
+.athlete-facts dt{font-size:11px;font-weight:700;color:var(--muted);margin-bottom:5px}
+.athlete-facts dd{font-size:13px;line-height:1.5;margin:0;overflow-wrap:anywhere}
+.athlete-facts+.athlete-profile-section{margin-top:0}
+.athlete-summary{color:var(--muted);font-size:14px;margin:8px 0 0}
+.connection-intro{display:flex;align-items:center;gap:22px;margin-top:18px}
+.connection-intro .connection-profile-photo{margin:0;flex:none}
+.connection-intro .profile-initials{display:grid;place-items:center;background:#e7ded3;color:#423324;font-size:30px;font-weight:750}
+.connection-intro h2{margin:0 0 5px}
+.connection-intro .muted{margin:7px 0 0}
+.connection-help{border-top:1px solid var(--line);margin-top:26px;padding-top:22px}
+.connection-help h3{margin:0 0 8px;font-size:16px}
+.connection-help p{margin:0 0 6px;font-weight:650}
+.connection-help small{color:var(--muted)}
+.connection-about{max-width:680px;line-height:1.65;margin:18px 0 20px}
+.profile-more,.athlete-more{border-top:1px solid var(--line);margin-top:26px;padding-top:20px}
+.profile-more summary,.athlete-more summary{cursor:pointer;font-weight:700;color:var(--ink)}
+.profile-more[open] summary,.athlete-more[open] summary{margin-bottom:18px}
+.athlete-more .athlete-facts{margin-top:0}
+@media(max-width:600px){.connection-intro{align-items:flex-start;gap:14px}.connection-intro .connection-profile-photo{width:72px;height:72px}.connection-intro h2{font-size:23px}}
+.resume-heading{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:12px}
+.profile-body .resume-heading h3{margin:0}
+.resume-actions,.profile-edit-actions{display:flex;align-items:center;flex-wrap:wrap;gap:12px}
+.profile-resume>small{display:block;margin-top:10px;font-size:11px;color:var(--muted)}
+.profile-resume p{overflow-wrap:anywhere}
+.profile-resume #resume-status:empty{display:none}
+.profile-resume #resume-status:not(:empty){margin-top:12px;color:#9e3d14}
+.profile-editor{margin-top:28px;scroll-margin-top:24px}
+.profile-editor[hidden]{display:none}
+.profile-editor h2{margin:0}
+@media(max-width:600px){.athlete-identity{flex-direction:column;gap:16px}.athlete-facts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}.athlete-facts>div:first-child{grid-column:1/-1}.resume-heading{align-items:flex-start;flex-direction:column}.profile-editor .form-grid{padding:20px}.profile-body{padding-bottom:28px}}
+
+/* Three independent ways to use ASCEND. */
+.path-intro{margin:0;padding:16px 20px 0;background:var(--white);font-size:14px;color:var(--muted)}
+.program-path{grid-template-columns:repeat(3,minmax(0,1fr))}
+.program-path .path-step:last-child{border-right:0}
+@media(max-width:700px){.program-path{grid-template-columns:1fr}.program-path .path-step{border-right:0;border-bottom:1px solid var(--line)}.program-path .path-step:last-child{border-bottom:0}}
+
+.demo-faq{max-width:1280px;margin:40px auto;padding:0 24px}.demo-faq .panel{padding:16px;margin:8px 0}.demo-faq summary{cursor:pointer;font-weight:600}.network-tabs{display:flex;gap:12px;margin-bottom:24px}.rooted-panel+.path-intro{font-size:22px;padding:24px 20px 10px}#guidance-form{display:grid;gap:16px}
+
+.path-step .path-link{display:inline-flex;align-items:center;gap:8px;margin-top:8px;font-size:13px;font-weight:700;color:var(--accent)}
+.path-step .path-link svg{width:16px;height:16px}
+
+/* One visual section for the athlete's three starting points. */
+.rooted-start{grid-template-columns:minmax(0,1fr) minmax(0,1fr);align-items:stretch}
+.rooted-photo{position:relative;margin:0;min-height:460px;overflow:hidden}
+.rooted-photo img{display:block;width:100%;height:100%;position:absolute;inset:0;object-fit:cover;object-position:center}
+.rooted-photo figcaption{position:absolute;bottom:0;left:0;right:0;padding:28px 16px 12px;background:linear-gradient(transparent,rgba(0,0,0,.75));color:#fff;font-size:10px}
+.rooted-photo a{color:inherit}
+.rooted-start .rooted-copy{padding:32px}
+.rooted-start h2{margin:12px 0 24px}
+.rooted-start .program-path{grid-template-columns:1fr;gap:10px;border:0;background:transparent}
+.rooted-start .path-step{border:1px solid #465059!important;background:#293239;padding:16px 18px;color:#fff;border-radius:6px}
+.rooted-start .path-step:hover,.rooted-start .path-step:focus-visible{background:#354049;outline:2px solid #ff9d62;outline-offset:2px}
+.rooted-start .path-step p{color:#d3d9dd;margin:6px 0 0;font-size:13px}
+.rooted-start .path-link{color:#ffad79;margin-top:10px}
+@media(max-width:800px){.rooted-start{grid-template-columns:1fr}.rooted-photo{min-height:0;height:300px}.rooted-start .rooted-copy{padding:24px}.rooted-photo img{object-position:center 45%}}
+
+/* Keep demo tools secondary and the homepage focused. */
+.demo-options{position:relative;margin-left:auto;font-size:12px;color:var(--muted)}
+.demo-options>summary{cursor:pointer;padding:10px 12px;border:1px solid var(--line);border-radius:5px;white-space:nowrap}
+.demo-options-menu{position:absolute;right:0;top:calc(100% + 8px);z-index:50;width:210px;display:grid;gap:16px;padding:18px;background:var(--white);border:1px solid var(--line);border-radius:6px;box-shadow:0 8px 24px #0002}
+.demo-options-menu .role-label{display:grid;gap:8px}.demo-options-menu select{width:100%}
+.demo-options-menu .reset-button{text-align:left;margin:0}
+.athlete-profile-section{margin-top:30px;padding-top:26px}
+.profile-body .athlete-profile-section p{line-height:1.65}
+@media(max-width:600px){.demo-options>summary{padding:8px;font-size:11px}.athlete-profile-section{margin-top:24px;padding-top:22px}}
+
+.connection-detail .connection-intro{margin-top:28px;align-items:center}
+.connection-detail .connection-profile-photo{width:82px;height:82px;margin:0;flex:none}
+.connection-opportunity{padding:14px 16px;border:1px solid var(--line);border-left:3px solid var(--accent);margin:18px 0;line-height:1.5}
+.connection-opportunity small{display:block;color:var(--muted)}
+.opportunity-more{border-top:1px solid var(--line);padding-top:16px;margin-top:20px}
+.opportunity-more summary{cursor:pointer;font-weight:700}
+
+.connection-detail .connection-intro{margin-top:22px;padding:28px 0;border-top:3px solid var(--accent)}
+.connection-detail .connection-help{margin-top:0;padding-top:24px}
+.connection-opportunity h3{margin:0 0 8px;font-size:17px}
+.connection-opportunity p{margin:0 0 12px}
+.connection-opportunity .text-button{font-size:14px;text-align:left}
+.connection-opportunity small{margin-top:8px}
+
+/* Compact Campbell / ASCEND lockup, with room around the spirit mark. */
+.program-brand { align-items: center; }
+.athletics-mark { display:block; width:64px; height:50px; object-fit:contain; margin-right:4px; }
+.brand-divider { width:1px; height:28px; background:#171717; flex:none; margin:0 2px; }
+.card-footer .text-button { margin-left:auto; }
+@media(max-width:700px) {
+ .program-brand { gap:7px; }
+ .athletics-mark { width:47px; height:40px; margin-right:0; }
+ .brand-school,.brand-program { font-size:21px; }
+ .brand-divider { height:23px; margin:0 1px; }
+ .brand-arrow { width:21px; height:21px; margin-left:5px; }
+}
+@media(max-width:380px) {
+ .program-brand { gap:5px; }
+ .athletics-mark { width:40px; height:34px; }
+ .brand-school,.brand-program { font-size:18px; }
+}
+
+/* Let the headline own the hero; keep supporting copy readable and concise. */
+.hero-copy { display:flex; flex-direction:column; justify-content:center; }
+.hero-copy .hero-rally { margin-top:0; }
+.program-hero h1 { font-size:clamp(42px,4.8vw,72px); }
+.hero-copy p { font-size:14px; max-width:400px; margin-bottom:0; }
+.profile-preview .athlete-profile-section > p { white-space:pre-line; }
+.nav-item,.network-tabs button,.path-link,h2,h3,.profile-more summary,.athlete-more summary,.opportunity-more summary { text-transform:capitalize; }
+@media(max-width:700px) {
+ .program-hero h1 { font-size:clamp(38px,9.5vw,54px); }
+ .hero-copy { padding:32px 25px; }
+ .hero-copy p { font-size:13px; }
+}
+
+.connection-columns { grid-template-columns:1fr; }
+
+/* Official company marks keep their original proportions. */
+.company-icon.company-logo { width: 144px; height: 54px; background: #fff; padding: 6px 8px; border: 1px solid #e6e4df; border-radius: 6px; }
+.company-logo img { display: block; width: 100%; height: 100%; object-fit: contain; }
+.opportunity-brand { height: 52px; max-width: 190px; margin: 0 44px 20px 0; }
+.opportunity-brand img { display: block; max-width: 100%; height: 100%; object-fit: contain; object-position: left center; }
+.company-icon.company-logo:has(img[src$="ks-bank-logo.svg"]), .opportunity-brand:has(img[src$="ks-bank-logo.svg"]) { background: #272b2e; padding: 8px; border-radius: 6px; }
+
+/* Keep role switching visible; reserve reset for the footer. */
+.role-label.visible-role { flex-direction: row; align-items: center; gap: 10px; font-size: 12px; letter-spacing: 0; color: var(--black); white-space: nowrap; }
+.role-label.visible-role select { width: 190px; min-height: 44px; padding: 10px 12px; font-size: 13px; border-radius: 5px; }
+.visible-role select:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+.reset-button.footer-reset { min-height: 44px; padding: 8px 0; font-size: 12px; }
+@media(max-width:600px) { .role-label.visible-role { width: 100%; justify-content: space-between; } .role-label.visible-role select { width: min(220px, 72%); } }
+
+.concept-label { margin-left: 8px; background: #eeede8; color: #625f56; }
+.card.long-experience { border-top-color: var(--accent); }

@@ -9,7 +9,7 @@ export const defaultTheme = {
     "Campbell primary HEX palette verified October 28, 2026.",
   conceptLabel:
     "Student-built concept for the Presidential Innovation Challenge",
-  imagery: { src:"/images/campbell-campus.jpg", alt:"Panoramic view of Campbell University campus in Buies Creek", credit:"Photo: Stormsnsnow / Wikimedia Commons", license:"CC BY-SA 4.0", sourceUrl:"https://commons.wikimedia.org/wiki/File:CampbellUniversityStudentUnionPanorama.jpg" }, // Licensed campus photograph; attribution is rendered next to it.
+  imagery: { src:"/images/kamden-sixkiller-2026.webp", alt:"Campbell quarterback Kamden Sixkiller preparing to throw", credit:"Photo: Campbell Athletics / GoCamels", license:"Challenge demo", sourceUrl:"https://gocamels.com/news/2026/9/3/football-sixkiller-a-sooners-journey-to-the-creek.aspx" },
   contacts: {
     label: "Program contact",
     name: "To be confirmed for a future pilot",
