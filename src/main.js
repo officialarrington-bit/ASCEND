@@ -10,6 +10,7 @@ const arrow =
 const KEY = "ascend-demo-v1";
 const seed = () => ({
   school: defaultTheme.school,
+  resume: { ...demoResume },
   theme: {
     shortName: defaultTheme.shortName,
     colors: { ...defaultTheme.colors },
@@ -305,7 +306,7 @@ if (!state.ericPracticeConnectionClearedNov9) {
   persist();
 }
 
-if (state.athlete?.name === "Chase Arrington" && !state.resumeNov9Installed) {
+if (state.athlete?.name === "Chase Arrington" && !state.resume?.data) {
   if (!state.resume) state.resume = { ...demoResume };
   state.resumeNov9Installed = true;
   persist();
